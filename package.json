@@ -1,0 +1,16 @@
+{
+  "name": "weekly",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Lede — 設計與產品週刊 · for designers & PMs",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.1.0"
+  }
+}

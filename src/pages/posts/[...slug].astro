@@ -1,0 +1,74 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Masthead from '../../components/Masthead.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, dek, excerpt, category, readingMinutes, publishedAt, sources, featured } =
+  post.data;
+
+const dateLabel = `${publishedAt.getFullYear()} / ${String(publishedAt.getMonth() + 1).padStart(2, '0')} / ${String(publishedAt.getDate()).padStart(2, '0')}`;
+---
+<BaseLayout title={`${title} · Lede`} description={excerpt}>
+  <Masthead />
+  <div class="detail-back">
+    <div class="wrap">
+      <a href="/">← 回到本週精選</a>
+    </div>
+  </div>
+
+  <article>
+    <div class="wrap">
+      <div class="detail-header">
+        <div class="hero-meta">
+          {featured && <span class="tag">本週精選</span>}
+          <span>{category}</span>
+          <span>·</span>
+          <span>{readingMinutes} 分鐘閱讀</span>
+        </div>
+        <h1>{title}</h1>
+        {dek && <p class="detail-dek">{dek}</p>}
+        <div class="detail-byline">
+          <span>{dateLabel}</span>
+          <span>·</span>
+          <span>{readingMinutes} min read</span>
+        </div>
+      </div>
+
+      <div class="detail-body">
+        <Content />
+      </div>
+
+      {sources.length > 0 && (
+        <aside class="sources">
+          <h3>資料來源 · Sources &amp; References</h3>
+          <ul>
+            {sources.map((src, i) => (
+              <li>
+                <span class="s-num">{String(i + 1).padStart(2, '0')}</span>
+                <div class="s-body">
+                  <div class="s-title">
+                    <a href={src.url} target="_blank" rel="noopener noreferrer">{src.title}</a>
+                  </div>
+                  <div class="s-meta">{src.publisher}{src.date ? ` · ${src.date}` : ''}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )}
+    </div>
+  </article>
+
+  <SiteFooter />
+</BaseLayout>

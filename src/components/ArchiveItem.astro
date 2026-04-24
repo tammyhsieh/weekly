@@ -1,0 +1,15 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  post: CollectionEntry<'posts'>;
+}
+const { post } = Astro.props;
+const { title, category, publishedAt } = post.data;
+const dateStr = `${publishedAt.getFullYear()} · ${String(publishedAt.getMonth() + 1).padStart(2, '0')}/${String(publishedAt.getDate()).padStart(2, '0')}`;
+---
+<a href={`/posts/${post.id}/`} class="archive-item">
+  <div class="archive-num">{dateStr}</div>
+  <div class="archive-title">{title}</div>
+  <div class="archive-cat">{category}</div>
+</a>

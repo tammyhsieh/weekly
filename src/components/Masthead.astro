@@ -1,0 +1,29 @@
+---
+export interface Props {
+  activeNav?: 'home' | 'design' | 'product' | 'tools' | 'research' | 'all';
+}
+const { activeNav = 'home' } = Astro.props;
+
+const navItems = [
+  { key: 'home', label: '最新', href: '/' },
+  { key: 'design', label: '設計', href: '/category/design/' },
+  { key: 'product', label: '產品', href: '/category/product/' },
+  { key: 'tools', label: '工具', href: '/category/tools/' },
+  { key: 'research', label: '研究', href: '/category/research/' },
+  { key: 'all', label: '全部文章', href: '/archive/' },
+];
+---
+<header class="masthead">
+  <div class="wrap masthead-row">
+    <a href="/" class="logo">
+      <div class="logo-mark">Lede</div>
+      <div class="logo-sub">設計與產品週刊 · for designers &amp; PMs</div>
+    </a>
+    <nav class="nav">
+      {navItems.map((item) => (
+        <a href={item.href} class={activeNav === item.key ? 'active' : ''}>{item.label}</a>
+      ))}
+    </nav>
+    <a href="/#subscribe" class="masthead-cta">訂閱電子報</a>
+  </div>
+</header>

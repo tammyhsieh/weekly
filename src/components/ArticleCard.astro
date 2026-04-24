@@ -1,0 +1,23 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  post: CollectionEntry<'posts'>;
+}
+const { post } = Astro.props;
+const { title, excerpt, category, readingMinutes, sourceName, publishedAt } = post.data;
+const dateStr = `${publishedAt.getMonth() + 1} / ${publishedAt.getDate()}`;
+---
+<a href={`/posts/${post.id}/`} class="card">
+  <div class="card-meta">
+    <span class="card-cat">{category}</span>
+    <span>·</span>
+    <span>{readingMinutes} 分鐘</span>
+  </div>
+  <h3 class="card-title">{title}</h3>
+  <p class="card-excerpt">{excerpt}</p>
+  <div class="card-footer">
+    <span class="card-source">{sourceName}</span>
+    <span>{dateStr}</span>
+  </div>
+</a>

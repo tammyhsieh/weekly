@@ -1,0 +1,39 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  post: CollectionEntry<'posts'>;
+}
+const { post } = Astro.props;
+const { title, excerpt, category, readingMinutes, publishedAt, sourceName } = post.data;
+
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const monthLabel = `${monthNames[publishedAt.getMonth()]} ${publishedAt.getFullYear()}`;
+const dayLabel = String(publishedAt.getDate()).padStart(2, '0');
+---
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="hero-meta">
+        <span class="tag">本週精選</span>
+        <span>{category}</span>
+        <span>·</span>
+        <span>{readingMinutes} 分鐘閱讀</span>
+      </div>
+      <a href={`/posts/${post.id}/`} class="hero-title">{title}</a>
+      <p class="hero-excerpt">{excerpt}</p>
+      <div class="hero-footer">
+        <a href={`/posts/${post.id}/`} class="hero-read">閱讀全文 →</a>
+        <span>{sourceName}</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-visual-num">{dayLabel}</div>
+      <div class="hero-visual-label">{monthLabel}</div>
+      <div class="hero-visual-type">
+        <span>{publishedAt.toISOString().slice(0, 10).replace(/-/g, ' / ')}</span>
+        <span>Latest</span>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,79 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Masthead from '../components/Masthead.astro';
+import IssueBar from '../components/IssueBar.astro';
+import HeroArticle from '../components/HeroArticle.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import ArchiveItem from '../components/ArchiveItem.astro';
+import SubscribeCTA from '../components/SubscribeCTA.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+const allPosts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+
+const featured = allPosts.find((p) => p.data.featured) ?? allPosts[0];
+
+// Group by date: posts within 7 days of featured are "this week"
+const featuredTime = featured.data.publishedAt.valueOf();
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+const thisWeek = allPosts.filter(
+  (p) =>
+    p.id !== featured.id &&
+    featuredTime - p.data.publishedAt.valueOf() < WEEK_MS &&
+    featuredTime - p.data.publishedAt.valueOf() >= 0,
+);
+
+const olderPosts = allPosts
+  .filter((p) => featuredTime - p.data.publishedAt.valueOf() >= WEEK_MS)
+  .slice(0, 6);
+
+// compute week range (Mon–Sun) of the featured post
+const featuredDate = new Date(featured.data.publishedAt);
+const dayOfWeek = featuredDate.getDay();
+const diffToMonday = (dayOfWeek + 6) % 7;
+const weekStart = new Date(featuredDate);
+weekStart.setDate(featuredDate.getDate() - diffToMonday);
+const weekEnd = new Date(weekStart);
+weekEnd.setDate(weekStart.getDate() + 6);
+---
+<BaseLayout>
+  <Masthead activeNav="home" />
+  <IssueBar
+    weekStart={weekStart}
+    weekEnd={weekEnd}
+    thisWeekCount={thisWeek.length + 1}
+    totalCount={allPosts.length}
+  />
+  <HeroArticle post={featured} />
+
+  {thisWeek.length > 0 && (
+    <section>
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>本週其他精選</h2>
+          <div class="sec-head-meta">{thisWeek.length} articles · updated weekly</div>
+        </div>
+        <div class="grid">
+          {thisWeek.map((post) => <ArticleCard post={post} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {olderPosts.length > 0 && (
+    <section class="archive">
+      <div class="wrap">
+        <div class="sec-head">
+          <h2>全部文章</h2>
+          <div class="sec-head-meta">View all {allPosts.length} articles →</div>
+        </div>
+        {olderPosts.map((post) => <ArchiveItem post={post} />)}
+      </div>
+    </section>
+  )}
+
+  <SubscribeCTA />
+  <SiteFooter />
+</BaseLayout>

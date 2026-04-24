@@ -1,0 +1,21 @@
+---
+export interface Props {
+  weekStart: Date;
+  weekEnd: Date;
+  thisWeekCount: number;
+  totalCount: number;
+}
+const { weekStart, weekEnd, thisWeekCount, totalCount } = Astro.props;
+
+const fmt = (d: Date) =>
+  `${d.getFullYear()} 年 ${d.getMonth() + 1} 月 ${d.getDate()} 日`;
+---
+<div class="issue-bar">
+  <div class="wrap issue-bar-row">
+    <div>
+      <span class="dot"></span>
+      本週更新 · {fmt(weekStart)} – {fmt(weekEnd)}
+    </div>
+    <div>本週精選 {thisWeekCount} 篇 · 全部文章 {totalCount} 篇</div>
+  </div>
+</div>
